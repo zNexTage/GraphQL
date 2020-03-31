@@ -3,6 +3,13 @@ const {ApolloServer, gql} = require('apollo-server');
 const typeDefs = gql`
     scalar Date
 
+    type Produto{
+        nome: String!
+        preco: Float!
+        desconto:Float
+        precoComDesconto:Float
+    }
+
     type Usuario{
         id:ID
         nome: String!
@@ -17,6 +24,7 @@ const typeDefs = gql`
         ola: String
         horaAtual: Date
         usuarioLogado: Usuario
+        produto:Produto
     }
 `;
 
@@ -27,6 +35,18 @@ const resolvers = {
 
             //Retorna o salario_real que foi declarado abaixo
             return usuario.salario_real;
+        }
+    },
+    Produto:{
+        precoComDesconto(produto){
+            const preco = produto.preco;
+            const desconto = produto.desconto;           
+
+            if(desconto){
+                return preco * (1 - desconto);
+            }
+
+            return preco;
         }
     },
     Query:{
@@ -46,6 +66,13 @@ const resolvers = {
                 idade:17,
                 salario_real: 1.500, //O nome desse attr está diferente do que foi declarado, portanto precisa de um resolver para funcionar
                 vip: true
+            }
+        },
+        produto(){
+            return {
+                nome: 'Xbox One X',
+                preco: 2499,
+                desconto:0.15
             }
         }
     }
